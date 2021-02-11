@@ -4,7 +4,6 @@ import os
 
 from django.http import HttpResponseNotFound
 from django.shortcuts import render
-from django.conf import settings
 from pokemon_entities.models import Pokemon, PokemonEntity
 
 
@@ -33,13 +32,16 @@ def show_all_pokemons(request):
     for pokemon in pokemons:
         for pokemon_entity in PokemonEntity.objects.filter(Pokemon = pokemon):
             add_pokemon(
-                folium_map, pokemon_entity.lat, pokemon_entity.lon, os.path.join(settings.BASE_DIR, pokemon.image.url))
+                folium_map, 
+                pokemon_entity.lat, 
+                pokemon_entity.lon, 
+                request.build_absolute_uri(pokemon.image.url))
 
     pokemons_on_page = []
     for pokemon in pokemons:
         pokemons_on_page.append({
             'pokemon_id': pokemon.id,
-            'img_url': os.path.join(settings.BASE_DIR, pokemon.image.url),
+            'img_url': request.build_absolute_uri(pokemon.image.url),
             'title_ru': pokemon.title,
         })
 
