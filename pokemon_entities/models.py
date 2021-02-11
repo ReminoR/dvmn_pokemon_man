@@ -12,6 +12,8 @@ class PokemonEntity(models.Model):
     Pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE)
     lon = models.FloatField()
     lat = models.FloatField()
+    appeared_at = models.DateTimeField(null=True)
+    disappeared_at = models.DateTimeField(null=True)
 
     def __str__(self):
         return f"{self.lat} {self.lon}"
