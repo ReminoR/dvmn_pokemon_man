@@ -3,7 +3,12 @@ from django.db import models
 # your models here
 class Pokemon(models.Model):
     title = models.CharField(max_length=200)
+    title_en = models.CharField(max_length=200, null=True, blank=True)
+    title_jp = models.CharField(max_length=200, null=True, blank=True)
+    description = models.TextField(default='Описание покемона')
     image = models.ImageField(upload_to='pokemons', null=True, blank=True)
+    previous_evolution = models.ForeignKey('Pokemon', related_name = 'previous',null=True, blank=True, on_delete=models.SET_NULL)
+    next_evolution = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.title}"

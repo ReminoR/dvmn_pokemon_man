@@ -52,20 +52,50 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    with open("pokemon_entities/pokemons.json", encoding="utf-8") as database:
-        pokemons = json.load(database)['pokemons']
+    # with open("pokemon_entities/pokemons.json", encoding="utf-8") as database:
+    #     pokemons = json.load(database)['pokemons']
+    pokemons = Pokemon.objects.all()
 
     for pokemon in pokemons:
-        if pokemon['pokemon_id'] == int(pokemon_id):
+        if pokemon.id == int(pokemon_id):
             requested_pokemon = pokemon
             break
     else:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
+    pokemons_entities = PokemonEntity.objects.filter(Pokemon=requested_pokemon)
+
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for pokemon_entity in requested_pokemon['entities']:
+    for pokemon_entity in pokemons_entities:
         add_pokemon(
-            folium_map, pokemon_entity['lat'], pokemon_entity['lon'], pokemon['img_url'])
+            folium_map, pokemon_entity.lat, pokemon_entity.lon, request.build_absolute_uri(requested_pokemon.image.url))
+
+    pokemon = {
+        "pokemon_id": requested_pokemon.id,
+        "title_ru": requested_pokemon.title,
+        "title_en": requested_pokemon.title_en,
+        "title_jp": requested_pokemon.title_jp,
+        "description": requested_pokemon.description,
+        "img_url": request.build_absolute_uri(requested_pokemon.image.url),
+    }
+
+    try:
+        pokemon["previous_evolution"] = {
+            "title_ru": requested_pokemon.previous_evolution.title,
+            "pokemon_id": requested_pokemon.previous_evolution.id,
+            "img_url": requested_pokemon.previous_evolution.image.url
+        }
+    except AttributeError:
+        pass
+
+    try:
+        pokemon["next_evolution"] = {
+            "title_ru": requested_pokemon.next_evolution.title,
+            "pokemon_id": requested_pokemon.next_evolution.id,
+            "img_url": requested_pokemon.next_evolution.image.url
+        }
+    except AttributeError:
+        pass
 
     return render(request, "pokemon.html", context={'map': folium_map._repr_html_(),
                                                     'pokemon': pokemon})
