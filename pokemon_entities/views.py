@@ -52,8 +52,6 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    # with open("pokemon_entities/pokemons.json", encoding="utf-8") as database:
-    #     pokemons = json.load(database)['pokemons']
     pokemons = Pokemon.objects.all()
 
     for pokemon in pokemons:
@@ -68,7 +66,11 @@ def show_pokemon(request, pokemon_id):
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon_entity in pokemons_entities:
         add_pokemon(
-            folium_map, pokemon_entity.lat, pokemon_entity.lon, request.build_absolute_uri(requested_pokemon.image.url))
+            folium_map,
+            pokemon_entity.lat,
+            pokemon_entity.lon,
+            request.build_absolute_uri(requested_pokemon.image.url)
+        )
 
     pokemon = {
         "pokemon_id": requested_pokemon.id,
@@ -88,14 +90,12 @@ def show_pokemon(request, pokemon_id):
     except AttributeError:
         pass
 
-    try:
+    for next_evolution in requested_pokemon.next_evolutions.all():
         pokemon["next_evolution"] = {
-            "title_ru": requested_pokemon.next_evolution.title,
-            "pokemon_id": requested_pokemon.next_evolution.id,
-            "img_url": requested_pokemon.next_evolution.image.url
+            "title_ru": next_evolution.title,
+            "pokemon_id": next_evolution.id,
+            "img_url": next_evolution.image.url
         }
-    except AttributeError:
-        pass
 
     return render(request, "pokemon.html", context={'map': folium_map._repr_html_(),
                                                     'pokemon': pokemon})
