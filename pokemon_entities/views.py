@@ -1,6 +1,4 @@
 import folium
-import json
-import os
 
 from django.http import HttpResponseNotFound
 from django.shortcuts import render
@@ -18,23 +16,20 @@ def add_pokemon(folium_map, lat, lon, image_url=DEFAULT_IMAGE_URL):
     )
     folium.Marker(
         [lat, lon],
-        # tooltip=name,  # disable tooltip because of folium encoding bug
         icon=icon,
     ).add_to(folium_map)
 
 
 def show_all_pokemons(request):
-    # with open("pokemon_entities/pokemons.json", encoding="utf-8") as database:
-    #     pokemons = json.load(database)['pokemons']
     pokemons = Pokemon.objects.all()
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon in pokemons:
-        for pokemon_entity in PokemonEntity.objects.filter(Pokemon = pokemon):
+        for pokemon_entity in PokemonEntity.objects.filter(Pokemon=pokemon):
             add_pokemon(
-                folium_map, 
-                pokemon_entity.lat, 
-                pokemon_entity.lon, 
+                folium_map,
+                pokemon_entity.lat,
+                pokemon_entity.lon,
                 request.build_absolute_uri(pokemon.image.url))
 
     pokemons_on_page = []
@@ -97,5 +92,6 @@ def show_pokemon(request, pokemon_id):
             "img_url": next_evolution.image.url
         }
 
-    return render(request, "pokemon.html", context={'map': folium_map._repr_html_(),
-                                                    'pokemon': pokemon})
+    return render(request, "pokemon.html",
+                  context={'map': folium_map._repr_html_(),
+                           'pokemon': pokemon})

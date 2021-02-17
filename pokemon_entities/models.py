@@ -1,21 +1,30 @@
 from django.db import models
 
-# your models here
+
 class Pokemon(models.Model):
     title = models.CharField(verbose_name='Имя', max_length=200)
-    title_en = models.CharField(verbose_name='Имя на английском', max_length=200, null=True, blank=True)
-    title_jp = models.CharField(verbose_name='Имя на японском', max_length=200, null=True, blank=True)
-    description = models.TextField(verbose_name='Описание', default='Описание покемона', blank=True)
-    image = models.ImageField(verbose_name='Фото', upload_to='pokemons', null=True, blank=True)
-    previous_evolution = models.ForeignKey('Pokemon', 
-        verbose_name = 'Предыдущая эволюция', related_name='next_evolutions',
-        null=True, blank=True, on_delete=models.SET_NULL)
+    title_en = models.CharField(verbose_name='Имя на английском',
+                                max_length=200, blank=True)
+    title_jp = models.CharField(verbose_name='Имя на японском', max_length=200,
+                                blank=True)
+    description = models.TextField(verbose_name='Описание',
+                                   default='Описание покемона',
+                                   blank=True)
+    image = models.ImageField(verbose_name='Фото', upload_to='pokemons',
+                              null=True, blank=True)
+    previous_evolution = models.ForeignKey('Pokemon',
+                                           verbose_name='Предыдущая эволюция',
+                                           related_name='next_evolutions',
+                                           null=True, blank=True,
+                                           on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.title}"
 
+
 class PokemonEntity(models.Model):
-    Pokemon = models.ForeignKey(Pokemon, verbose_name='Покемон', on_delete=models.CASCADE)
+    Pokemon = models.ForeignKey(Pokemon, verbose_name='Покемон',
+                                on_delete=models.CASCADE)
     lon = models.FloatField(verbose_name='Долгота')
     lat = models.FloatField(verbose_name='Широта')
     appeared_at = models.DateTimeField(verbose_name='Появится', null=True)
@@ -28,4 +37,3 @@ class PokemonEntity(models.Model):
 
     def __str__(self):
         return f"{self.lat} {self.lon}"
-
