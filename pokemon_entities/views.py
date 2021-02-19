@@ -2,7 +2,7 @@ import folium
 
 from django.http import HttpResponseNotFound
 from django.shortcuts import render
-from pokemon_entities.models import Pokemon, PokemonEntity
+from pokemon_entities.models import Pokemon
 
 
 MOSCOW_CENTER = [55.751244, 37.618423]
@@ -25,7 +25,7 @@ def show_all_pokemons(request):
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon in pokemons:
-        for pokemon_entity in PokemonEntity.objects.filter(Pokemon=pokemon):
+        for pokemon_entity in pokemon.pokemon_entities.all():
             add_pokemon(
                 folium_map,
                 pokemon_entity.lat,
@@ -47,16 +47,12 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    pokemons = Pokemon.objects.all()
-
-    for pokemon in pokemons:
-        if pokemon.id == int(pokemon_id):
-            requested_pokemon = pokemon
-            break
-    else:
+    try:
+        requested_pokemon = Pokemon.objects.get(id=pokemon_id)
+    except Pokemon.DoesNotExist:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
-    pokemons_entities = PokemonEntity.objects.filter(Pokemon=requested_pokemon)
+    pokemons_entities = requested_pokemon.pokemon_entities.all()
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon_entity in pokemons_entities:
