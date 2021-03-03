@@ -1,6 +1,13 @@
 from django.db import models
 
 
+class PokemonElementType(models.Model):
+    title = models.CharField(verbose_name='Название элемента', max_length=100)
+
+    def __str__(self):
+        return f"{self.title}"
+
+
 class Pokemon(models.Model):
     title = models.CharField(verbose_name='Имя', max_length=200)
     title_en = models.CharField(verbose_name='Имя на английском',
@@ -17,6 +24,7 @@ class Pokemon(models.Model):
                                            related_name='next_evolutions',
                                            null=True, blank=True,
                                            on_delete=models.SET_NULL)
+    element_type = models.ManyToManyField('PokemonElementType', related_name='pokemons')
 
     def __str__(self):
         return f"{self.title}"
