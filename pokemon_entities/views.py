@@ -72,6 +72,15 @@ def show_pokemon(request, pokemon_id):
         "img_url": request.build_absolute_uri(requested_pokemon.image.url),
     }
 
+    pokemons_elements = []
+    for element in requested_pokemon.element_type.all():
+        pokemons_elements.append({
+            'title': element.title,
+            'img': request.build_absolute_uri(element.image.url),
+        })
+
+    pokemon['element_type'] = pokemons_elements
+
     try:
         pokemon["previous_evolution"] = {
             "title_ru": requested_pokemon.previous_evolution.title,
