@@ -77,6 +77,7 @@ def show_pokemon(request, pokemon_id):
         pokemons_elements.append({
             'title': element.title,
             'img': request.build_absolute_uri(element.image.url),
+            'strong_against': element.strong_against.all(),
         })
 
     pokemon['element_type'] = pokemons_elements

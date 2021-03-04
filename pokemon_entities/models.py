@@ -6,6 +6,7 @@ class PokemonElementType(models.Model):
     image = models.ImageField(verbose_name='Картинка',
                               upload_to='pokemon_elements',
                               null=True, blank=True)
+    strong_against = models.ManyToManyField('self', symmetrical=False)
 
     def __str__(self):
         return f"{self.title}"
@@ -27,7 +28,8 @@ class Pokemon(models.Model):
                                            related_name='next_evolutions',
                                            null=True, blank=True,
                                            on_delete=models.SET_NULL)
-    element_type = models.ManyToManyField('PokemonElementType', related_name='pokemons')
+    element_type = models.ManyToManyField('PokemonElementType',
+                                          related_name='pokemons')
 
     def __str__(self):
         return f"{self.title}"
